@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NEET (UG) - 2025</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #fff;
+      overflow: auto;
+    }
+
+    canvas {
+      display: block;
+      margin: 30px auto;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="pdf-viewer"></canvas>
+
+  <script src="pdf.js"></script>
+  <script>
+    const url = "result.pdf";
+
+    const loadingTask = pdfjsLib.getDocument({ url });
+    loadingTask.promise.then(function (pdf) {
+      pdf.getPage(1).then(function (page) {
+        const scale = 2.5; // 💯 Full 2.5x zoom
+        const viewport = page.getViewport({ scale });
+
+        const canvas = document.getElementById("pdf-viewer");
+        const context = canvas.getContext("2d");
+
+        const outputScale = window.devicePixelRatio || 1;
+
+        canvas.width = Math.floor(viewport.width * outputScale);
+        canvas.height = Math.floor(viewport.height * outputScale);
+        canvas.style.width = Math.floor(viewport.width) + "px";
+        canvas.style.height = Math.floor(viewport.height) + "px";
+
+        const transform = outputScale !== 1
+          ? [outputScale, 0, 0, outputScale, 0, 0]
+          : null;
+
+        const renderContext = {
+          canvasContext: context,
+          transform: transform,
+          viewport: viewport
+        };
+
+        page.render(renderContext);
+      });
+    });
+  </script>
+</body>
+</html>
